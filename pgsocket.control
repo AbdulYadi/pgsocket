@@ -1,0 +1,5 @@
+# qr extension
+comment = 'TCP IP Socket client'
+default_version = '1.0'
+module_pathname = '$libdir/pgsocket'
+relocatable = true
