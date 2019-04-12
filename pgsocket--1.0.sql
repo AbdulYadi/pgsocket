@@ -4,3 +4,8 @@
 CREATE OR REPLACE FUNCTION public.pgsocketsend(IN t_address text, IN i_port integer, IN i_timeoutsec integer, IN by_data bytea)
 RETURNS void
 AS 'MODULE_PATHNAME' LANGUAGE C STABLE;
+
+CREATE OR REPLACE FUNCTION public.pgsocketsendrcvstxetx(IN t_address text, IN i_port integer, IN i_sendtimeoutsec integer, IN i_recvtimeoutsec integer, IN by_data bytea)
+RETURNS bytea
+AS 'MODULE_PATHNAME' LANGUAGE C STABLE;
+
