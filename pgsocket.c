@@ -50,19 +50,19 @@ pgsocketsend(PG_FUNCTION_ARGS)
 	int32 hsock;
 	int32 bytecount;
 	if(PG_NARGS()!=PGSOCKETSEND_ARGCOUNT){
-		elog(ERROR, "argument count must be %d", PGSOCKETSEND_ARGCOUNT);
+		elog(ERROR, "/*argument count must be %d*/", PGSOCKETSEND_ARGCOUNT);
 	}	
 	if(PG_ARGISNULL(PGSOCKETSEND_ARGADDRESS)){
-		elog(ERROR, "address must be defined");
+		elog(ERROR, "/*address must be defined*/");
 	}
 	if(PG_ARGISNULL(PGSOCKETSEND_ARGPORT)){
-		elog(ERROR, "port must be defined");
+		elog(ERROR, "/*port must be defined*/");
 	}
 	if(PG_ARGISNULL(PGSOCKETSEND_ARGTIMEOUTSEC)){
-		elog(ERROR, "timeout must be defined");
+		elog(ERROR, "/*timeout must be defined*/");
 	}
 	if(PG_ARGISNULL(PGSOCKETSEND_ARGDATA)){
-		elog(ERROR, "data must be defined");
+		elog(ERROR, "/*data must be defined*/");
 	}
 	hsock = pgsocketconfig(
 		TextDatumGetCString(PG_GETARG_DATUM(PGSOCKETSEND_ARGADDRESS)), 
@@ -74,7 +74,7 @@ pgsocketsend(PG_FUNCTION_ARGS)
 	len = VARSIZE_ANY_EXHDR(data);	
 	if( (bytecount=send(hsock, buf, len, 0))==-1 ){
 		close(hsock);
-		elog(ERROR, "Error sending data %d", errno);
+		elog(ERROR, "/*error sending data %d*/", errno);
 	}	
 	close(hsock);
 	PG_RETURN_VOID();
@@ -97,22 +97,22 @@ pgsocketsendrcvstxetx(PG_FUNCTION_ARGS)
 	int32 etxfound;
 	
 	if(PG_NARGS()!=PGSOCKETRCVSTXETX_ARGCOUNT){
-		elog(ERROR, "argument count must be %d", PGSOCKETRCVSTXETX_ARGCOUNT);
+		elog(ERROR, "/*argument count must be %d*/", PGSOCKETRCVSTXETX_ARGCOUNT);
 	}	
 	if(PG_ARGISNULL(PGSOCKETRCVSTXETX_ARGADDRESS)){
-		elog(ERROR, "address must be defined");
+		elog(ERROR, "/*address must be defined*/");
 	}
 	if(PG_ARGISNULL(PGSOCKETRCVSTXETX_ARGPORT)){
-		elog(ERROR, "port must be defined");
+		elog(ERROR, "/*port must be defined*/");
 	}
 	if(PG_ARGISNULL(PGSOCKETRCVSTXETX_ARGSENDTIMEOUTSEC)){
-		elog(ERROR, "send timeout must be defined");
+		elog(ERROR, "/*send timeout must be defined*/");
 	}
 	if(PG_ARGISNULL(PGSOCKETRCVSTXETX_ARGRCVTIMEOUTSEC)){
-		elog(ERROR, "receive timeout must be defined");
+		elog(ERROR, "/*receive timeout must be defined*/");
 	}
 	if(PG_ARGISNULL(PGSOCKETRCVSTXETX_ARGSENDDATA)){
-		elog(ERROR, "send data must be defined");
+		elog(ERROR, "/*send data must be defined*/");
 	}		
 	hsock = pgsocketconfig(
 		TextDatumGetCString(PG_GETARG_DATUM(PGSOCKETRCVSTXETX_ARGADDRESS)), 
@@ -124,7 +124,7 @@ pgsocketsendrcvstxetx(PG_FUNCTION_ARGS)
 	len = VARSIZE_ANY_EXHDR(data);	
 	if( (bytecount=send(hsock, sendbuf, len, 0))==-1 ){
 		close(hsock);
-		elog(ERROR, "Error sending data %d", errno);
+		elog(ERROR, "/*error sending data %d*/", errno);
 	}	
 	
 	stxfound=0;
@@ -134,7 +134,7 @@ pgsocketsendrcvstxetx(PG_FUNCTION_ARGS)
 		if( (bytecount=read(hsock, recvbuf, RECVBUFFSIZE))==-1 ){
 			close(hsock);
 			pfree(bytedata.data);
-			elog(ERROR, "Error receiving data %d", errno);
+			elog(ERROR, "/*error receiving data %d*/", errno);
 		}	
 		if(bytecount<1) {
 			break;
@@ -169,7 +169,7 @@ pgsocketsendrcvstxetx(PG_FUNCTION_ARGS)
 	close(hsock);
 	if(!etxfound) {		
 		pfree(bytedata.data);
-		elog(ERROR, "ETX not found");
+		elog(ERROR, "/*ETX not found*/");
 	}
 	
 	byteout=(bytea*)palloc(bytedata.len+VARHDRSZ);
@@ -188,7 +188,7 @@ static int32 pgsocketconfig(const char* address, int32 port, int32 sendtimeout, 
 	
 	hsock = socket(AF_INET, SOCK_STREAM, 0);
 	if(hsock==INVALID_SOCKET){
-		elog(ERROR,"Error initializing socket %d",errno);
+		elog(ERROR,"/*error initializing socket %d*/",errno);
 	}	
 	
 	p_int = (int32*)palloc(sizeof(int32));
@@ -198,7 +198,7 @@ static int32 pgsocketconfig(const char* address, int32 port, int32 sendtimeout, 
 	){
 		pfree(p_int);
 		close(hsock);
-		elog(ERROR,"Error setting options %d",errno);
+		elog(ERROR,"/*error setting options %d*/",errno);
 	}
 	pfree(p_int);	
 	
@@ -207,7 +207,7 @@ static int32 pgsocketconfig(const char* address, int32 port, int32 sendtimeout, 
 		tv.tv_usec = 0;		
 		if(setsockopt( hsock, SOL_SOCKET, SO_SNDTIMEO, (char *)&tv,  sizeof tv)){
 			close(hsock);
-			elog(ERROR,"can not set socket send timeout %d", errno);
+			elog(ERROR,"/*can not set socket send timeout %d*/", errno);
 		}		
 	}
 	
@@ -216,7 +216,7 @@ static int32 pgsocketconfig(const char* address, int32 port, int32 sendtimeout, 
 		tv.tv_usec = 0;	
 		if(setsockopt( hsock, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,  sizeof tv)){
 			close(hsock);
-			elog(ERROR,"can not set socket receive timeout %d", errno);
+			elog(ERROR,"/*can not set socket receive timeout %d*/", errno);
 		}		
 	}
 	
@@ -228,7 +228,7 @@ static int32 pgsocketconfig(const char* address, int32 port, int32 sendtimeout, 
 	if( connect( hsock, (struct sockaddr*)&my_addr, sizeof(my_addr)) == -1 ){
 		if( (err = errno) != EINPROGRESS ){
 			close(hsock);
-			elog(ERROR, "Error connecting socket %d", errno);
+			elog(ERROR, "/*error connecting socket %d*/", errno);
 		}
 	}	
 	
