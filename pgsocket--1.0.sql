@@ -9,3 +9,7 @@ CREATE OR REPLACE FUNCTION public.pgsocketsendrcvstxetx(IN t_address text, IN i_
 RETURNS bytea
 AS 'MODULE_PATHNAME' LANGUAGE C STABLE;
 
+CREATE OR REPLACE FUNCTION public.pgsocketgetimage(IN t_address text, IN i_port integer, IN i_sendtimeoutsec integer, IN i_recvtimeoutsec integer, IN t_command text, IN i_imageid integer)
+RETURNS bytea
+AS 'MODULE_PATHNAME' LANGUAGE C STABLE;
+
